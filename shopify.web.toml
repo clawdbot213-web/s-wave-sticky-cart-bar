@@ -1,4 +1,4 @@
-name = "remix"
+name = "sticky-cart-bar"
 roles = ["frontend", "backend"]
 webhooks_path = "/webhooks/app/uninstalled"
 

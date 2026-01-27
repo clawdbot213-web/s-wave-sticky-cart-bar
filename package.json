@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "s-wave-sticky-cart-bar",
   "private": true,
   "scripts": {
     "build": "remix vite:build",
