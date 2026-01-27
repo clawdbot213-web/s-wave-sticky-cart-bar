@@ -1,13 +1,18 @@
 {% comment %} Sticky Cart Bar app block {% endcomment %}
 <div id="s-wave-sticky-cart-bar"
+  style="--s-wave-sticky-bar-bg: {{ block.settings.background_color }}; --s-wave-sticky-bar-border: {{ block.settings.border_color }}; --s-wave-sticky-bar-text: {{ block.settings.text_color }}; --s-wave-sticky-bar-button-bg: {{ block.settings.button_color }}; --s-wave-sticky-bar-button-text: {{ block.settings.button_text_color }};"
   data-product-id="{{ product.id }}"
   data-variant-id="{{ product.selected_or_first_available_variant.id }}"
   data-product-title="{{ product.title | escape }}"
   data-price="{{ product.selected_or_first_available_variant.price | money }}">
   <div class="s-wave-sticky-cart-bar__content">
     <div class="s-wave-sticky-cart-bar__info">
-      <span class="s-wave-sticky-cart-bar__title">{{ product.title }}</span>
-      <span class="s-wave-sticky-cart-bar__price">{{ product.selected_or_first_available_variant.price | money }}</span>
+      {% if block.settings.show_title %}
+        <span class="s-wave-sticky-cart-bar__title">{{ product.title }}</span>
+      {% endif %}
+      {% if block.settings.show_price %}
+        <span class="s-wave-sticky-cart-bar__price">{{ product.selected_or_first_available_variant.price | money }}</span>
+      {% endif %}
     </div>
     <button class="s-wave-sticky-cart-bar__button" type="button">
       {{ block.settings.button_label }}
@@ -28,6 +33,48 @@
       "id": "button_label",
       "label": "Button label",
       "default": "Add to cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show product title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
     }
   ]
 }
