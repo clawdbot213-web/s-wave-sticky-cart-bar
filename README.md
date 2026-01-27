@@ -1,4 +1,13 @@
-# Shopify App Template - Remix
+# S Wave Sticky Add‑to‑Cart Bar
+
+A Shopify app that adds a sticky add‑to‑cart bar to product pages, keeping the purchase action visible as shoppers scroll.
+
+- Plan: `docs/APP_PLAN.md`
+- Status: scaffolded from Shopify Remix template; dependency install hangs in this environment
+
+---
+
+## Template Notes
 
 > [!NOTE]
 > **Remix is now React Router.** As of [React Router v7](https://remix.run/blog/merging-remix-and-react-router), Remix and React Router have merged.
