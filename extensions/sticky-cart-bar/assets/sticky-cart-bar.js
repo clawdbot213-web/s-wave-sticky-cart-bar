@@ -7,11 +7,23 @@
   const productForm = document.querySelector('form[action*="/cart/add"]');
   const variantInput = productForm?.querySelector('input[name="id"]');
 
+  const alwaysShow = bar.dataset.alwaysShow === 'true';
+  const showAfter = parseInt(bar.dataset.showAfter || '0', 10) || 0;
+  const defaultLabel = bar.dataset.buttonLabel || button?.textContent || 'Add to cart';
+  const soldOutLabel = bar.dataset.soldOutLabel || 'Sold out';
+
   const syncVariantFromForm = () => {
     if (!variantInput) return;
     if (variantInput.value) {
       bar.dataset.variantId = variantInput.value;
     }
+  };
+
+  const syncAvailability = () => {
+    const available = bar.dataset.available !== 'false';
+    if (!button) return;
+    button.disabled = !available;
+    button.textContent = available ? defaultLabel : soldOutLabel;
   };
 
   if (variantInput) {
@@ -20,28 +32,25 @@
     variantInput.addEventListener('input', syncVariantFromForm);
   }
 
-  const showBar = () => {
-    bar.classList.add('is-visible');
-  };
+  const shouldShow = () => {
+    if (alwaysShow) return true;
+    if (showAfter > 0 && window.scrollY < showAfter) return false;
+    if (!productForm) return true;
 
-  const hideBar = () => {
-    bar.classList.remove('is-visible');
-  };
-
-  const onScroll = () => {
-    if (!productForm) {
-      showBar();
-      return;
-    }
     const rect = productForm.getBoundingClientRect();
-    if (rect.bottom < 0 || rect.top > window.innerHeight) {
-      showBar();
+    return rect.bottom < 0 || rect.top > window.innerHeight;
+  };
+
+  const toggleBar = () => {
+    if (shouldShow()) {
+      bar.classList.add('is-visible');
     } else {
-      hideBar();
+      bar.classList.remove('is-visible');
     }
   };
 
   const submitAddToCart = () => {
+    if (button?.disabled) return;
     const quantity = Math.max(1, parseInt(quantityInput?.value || '1', 10) || 1);
 
     if (productForm) {
@@ -69,8 +78,9 @@
     }).catch(() => {});
   };
 
+  syncAvailability();
   button?.addEventListener('click', submitAddToCart);
-  document.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  onScroll();
+  document.addEventListener('scroll', toggleBar, { passive: true });
+  window.addEventListener('resize', toggleBar);
+  toggleBar();
 })();

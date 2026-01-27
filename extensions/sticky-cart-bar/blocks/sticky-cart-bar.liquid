@@ -1,20 +1,94 @@
 {% comment %} Sticky Cart Bar app block {% endcomment %}
 {% if product %}
-  <div id="s-wave-sticky-cart-bar"
-    style="--s-wave-sticky-bar-bg: {{ block.settings.background_color }}; --s-wave-sticky-bar-border: {{ block.settings.border_color }}; --s-wave-sticky-bar-text: {{ block.settings.text_color }}; --s-wave-sticky-bar-button-bg: {{ block.settings.button_color }}; --s-wave-sticky-bar-button-text: {{ block.settings.button_text_color }};"
+  {% assign variant = product.selected_or_first_available_variant %}
+  {% assign compare_at = variant.compare_at_price %}
+  {% assign price = variant.price %}
+  {% assign show_compare = false %}
+  {% if compare_at and compare_at > price %}
+    {% assign show_compare = true %}
+  {% endif %}
+
+  {% assign theme = block.settings.theme_style %}
+  {% assign bg = '#ffffff' %}
+  {% assign border = '#e5e7eb' %}
+  {% assign text = '#111827' %}
+  {% assign button_bg = '#111827' %}
+  {% assign button_text = '#ffffff' %}
+
+  {% if theme == 'dark' %}
+    {% assign bg = '#0f172a' %}
+    {% assign border = '#1e293b' %}
+    {% assign text = '#f8fafc' %}
+    {% assign button_bg = '#f97316' %}
+    {% assign button_text = '#0f172a' %}
+  {% elsif theme == 'glass' %}
+    {% assign bg = 'rgba(15, 23, 42, 0.78)' %}
+    {% assign border = 'rgba(148, 163, 184, 0.35)' %}
+    {% assign text = '#f8fafc' %}
+    {% assign button_bg = '#38bdf8' %}
+    {% assign button_text = '#0f172a' %}
+  {% elsif theme == 'minimal' %}
+    {% assign bg = '#ffffff' %}
+    {% assign border = 'transparent' %}
+    {% assign text = '#111827' %}
+    {% assign button_bg = '#0f172a' %}
+    {% assign button_text = '#ffffff' %}
+  {% elsif theme == 'custom' %}
+    {% assign bg = block.settings.background_color %}
+    {% assign border = block.settings.border_color %}
+    {% assign text = block.settings.text_color %}
+    {% assign button_bg = block.settings.button_color %}
+    {% assign button_text = block.settings.button_text_color %}
+  {% endif %}
+
+  <div
+    id="s-wave-sticky-cart-bar"
+    class="s-wave-sticky-cart-bar s-wave-theme--{{ theme }} s-wave-position--{{ block.settings.position }}{% if block.settings.enable_shadow %} is-shadow{% endif %}"
+    style="--s-wave-sticky-bar-bg: {{ bg }}; --s-wave-sticky-bar-border: {{ border }}; --s-wave-sticky-bar-text: {{ text }}; --s-wave-sticky-bar-button-bg: {{ button_bg }}; --s-wave-sticky-bar-button-text: {{ button_text }};"
     data-product-id="{{ product.id }}"
-    data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+    data-variant-id="{{ variant.id }}"
     data-product-title="{{ product.title | escape }}"
-    data-price="{{ product.selected_or_first_available_variant.price | money }}">
+    data-price="{{ price | money }}"
+    data-compare-price="{{ compare_at | money }}"
+    data-available="{{ variant.available }}"
+    data-button-label="{{ block.settings.button_label }}"
+    data-sold-out-label="{{ block.settings.sold_out_label }}"
+    data-always-show="{{ block.settings.always_show }}"
+    data-show-after="{{ block.settings.show_after_scroll }}"
+  >
     <div class="s-wave-sticky-cart-bar__content">
+      {% if block.settings.show_image and product.featured_image %}
+        <div class="s-wave-sticky-cart-bar__media s-wave-image--{{ block.settings.image_shape }}">
+          <img
+            src="{{ product.featured_image | image_url: width: 120 }}"
+            alt="{{ product.featured_image.alt | escape }}"
+            loading="lazy"
+          />
+        </div>
+      {% endif %}
+
       <div class="s-wave-sticky-cart-bar__info">
         {% if block.settings.show_title %}
           <span class="s-wave-sticky-cart-bar__title">{{ product.title }}</span>
         {% endif %}
+        {% if block.settings.show_vendor %}
+          <span class="s-wave-sticky-cart-bar__vendor">{{ product.vendor }}</span>
+        {% endif %}
         {% if block.settings.show_price %}
-          <span class="s-wave-sticky-cart-bar__price">{{ product.selected_or_first_available_variant.price | money }}</span>
+          <div class="s-wave-sticky-cart-bar__price-row">
+            <span class="s-wave-sticky-cart-bar__price">{{ price | money }}</span>
+            {% if block.settings.show_compare_at and show_compare %}
+              <span class="s-wave-sticky-cart-bar__compare">{{ compare_at | money }}</span>
+            {% endif %}
+            {% if block.settings.show_discount and show_compare %}
+              <span class="s-wave-sticky-cart-bar__save">
+                Save {{ compare_at | minus: price | money }}
+              </span>
+            {% endif %}
+          </div>
         {% endif %}
       </div>
+
       <div class="s-wave-sticky-cart-bar__actions">
         {% if block.settings.show_quantity %}
           <input
@@ -25,8 +99,16 @@
             aria-label="Quantity"
           />
         {% endif %}
-        <button class="s-wave-sticky-cart-bar__button" type="button">
-          {{ block.settings.button_label }}
+        <button
+          class="s-wave-sticky-cart-bar__button"
+          type="button"
+          {% unless variant.available %}disabled{% endunless %}
+        >
+          {% if variant.available %}
+            {{ block.settings.button_label }}
+          {% else %}
+            {{ block.settings.sold_out_label }}
+          {% endif %}
         </button>
       </div>
     </div>
@@ -48,10 +130,22 @@
       "default": "Add to cart"
     },
     {
+      "type": "text",
+      "id": "sold_out_label",
+      "label": "Sold out label",
+      "default": "Sold out"
+    },
+    {
       "type": "checkbox",
       "id": "show_title",
       "label": "Show product title",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
     },
     {
       "type": "checkbox",
@@ -61,9 +155,82 @@
     },
     {
       "type": "checkbox",
+      "id": "show_compare_at",
+      "label": "Show compare-at price",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount",
+      "label": "Show savings badge",
+      "default": false
+    },
+    {
+      "type": "checkbox",
       "id": "show_quantity",
       "label": "Show quantity",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show product image",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Image shape",
+      "default": "rounded",
+      "options": [
+        { "value": "square", "label": "Square" },
+        { "value": "rounded", "label": "Rounded" },
+        { "value": "circle", "label": "Circle" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "theme_style",
+      "label": "Theme preset",
+      "default": "light",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" },
+        { "value": "glass", "label": "Glass" },
+        { "value": "minimal", "label": "Minimal" },
+        { "value": "custom", "label": "Custom" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "default": "bottom",
+      "options": [
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "top", "label": "Top" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "show_after_scroll",
+      "label": "Show after scroll (px)",
+      "min": 0,
+      "max": 1200,
+      "step": 50,
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "always_show",
+      "label": "Always show bar",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_shadow",
+      "label": "Enable shadow",
+      "default": true
     },
     {
       "type": "color",
@@ -75,19 +242,19 @@
       "type": "color",
       "id": "border_color",
       "label": "Border color",
-      "default": "#e5e5e5"
+      "default": "#e5e7eb"
     },
     {
       "type": "color",
       "id": "text_color",
       "label": "Text color",
-      "default": "#111111"
+      "default": "#111827"
     },
     {
       "type": "color",
       "id": "button_color",
       "label": "Button color",
-      "default": "#111111"
+      "default": "#111827"
     },
     {
       "type": "color",
