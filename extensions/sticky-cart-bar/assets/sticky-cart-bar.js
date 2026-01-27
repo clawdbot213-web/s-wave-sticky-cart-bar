@@ -44,9 +44,21 @@
   const toggleBar = () => {
     if (shouldShow()) {
       bar.classList.add('is-visible');
+      bar.setAttribute('aria-hidden', 'false');
     } else {
       bar.classList.remove('is-visible');
+      bar.setAttribute('aria-hidden', 'true');
     }
+  };
+
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      toggleBar();
+      ticking = false;
+    });
   };
 
   const submitAddToCart = () => {
@@ -80,7 +92,7 @@
 
   syncAvailability();
   button?.addEventListener('click', submitAddToCart);
-  document.addEventListener('scroll', toggleBar, { passive: true });
-  window.addEventListener('resize', toggleBar);
+  document.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
   toggleBar();
 })();
