@@ -3,6 +3,7 @@
   if (!bar) return;
 
   const button = bar.querySelector('.s-wave-sticky-cart-bar__button');
+  const quantityInput = bar.querySelector('.s-wave-sticky-cart-bar__quantity');
   const productForm = document.querySelector('form[action*="/cart/add"]');
 
   const showBar = () => {
@@ -27,11 +28,31 @@
   };
 
   const submitAddToCart = () => {
-    if (!productForm) return;
-    const submitButton = productForm.querySelector('[type="submit"]');
-    if (submitButton) {
-      submitButton.click();
+    const quantity = Math.max(1, parseInt(quantityInput?.value || '1', 10) || 1);
+
+    if (productForm) {
+      const formQuantity = productForm.querySelector('input[name="quantity"]');
+      if (formQuantity) {
+        formQuantity.value = String(quantity);
+      }
+      const submitButton = productForm.querySelector('[type="submit"]');
+      if (submitButton) {
+        submitButton.click();
+      }
+      return;
     }
+
+    const variantId = bar.dataset.variantId;
+    if (!variantId) return;
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ items: [{ id: Number(variantId), quantity }] })
+    }).catch(() => {});
   };
 
   button?.addEventListener('click', submitAddToCart);

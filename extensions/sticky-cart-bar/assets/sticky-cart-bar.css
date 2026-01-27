@@ -39,6 +39,21 @@
   gap: 4px;
 }
 
+.s-wave-sticky-cart-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.s-wave-sticky-cart-bar__quantity {
+  width: 64px;
+  padding: 8px;
+  border: 1px solid var(--s-wave-sticky-bar-border);
+  border-radius: 6px;
+  font: inherit;
+  color: inherit;
+}
+
 .s-wave-sticky-cart-bar__title {
   font-weight: 600;
 }

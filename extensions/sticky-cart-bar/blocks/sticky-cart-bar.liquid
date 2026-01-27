@@ -14,9 +14,20 @@
         <span class="s-wave-sticky-cart-bar__price">{{ product.selected_or_first_available_variant.price | money }}</span>
       {% endif %}
     </div>
-    <button class="s-wave-sticky-cart-bar__button" type="button">
-      {{ block.settings.button_label }}
-    </button>
+    <div class="s-wave-sticky-cart-bar__actions">
+      {% if block.settings.show_quantity %}
+        <input
+          class="s-wave-sticky-cart-bar__quantity"
+          type="number"
+          min="1"
+          value="1"
+          aria-label="Quantity"
+        />
+      {% endif %}
+      <button class="s-wave-sticky-cart-bar__button" type="button">
+        {{ block.settings.button_label }}
+      </button>
+    </div>
   </div>
 </div>
 
@@ -45,6 +56,12 @@
       "id": "show_price",
       "label": "Show price",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity",
+      "label": "Show quantity",
+      "default": false
     },
     {
       "type": "color",
