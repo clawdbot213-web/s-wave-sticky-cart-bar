@@ -1,38 +1,40 @@
 {% comment %} Sticky Cart Bar app block {% endcomment %}
-<div id="s-wave-sticky-cart-bar"
-  style="--s-wave-sticky-bar-bg: {{ block.settings.background_color }}; --s-wave-sticky-bar-border: {{ block.settings.border_color }}; --s-wave-sticky-bar-text: {{ block.settings.text_color }}; --s-wave-sticky-bar-button-bg: {{ block.settings.button_color }}; --s-wave-sticky-bar-button-text: {{ block.settings.button_text_color }};"
-  data-product-id="{{ product.id }}"
-  data-variant-id="{{ product.selected_or_first_available_variant.id }}"
-  data-product-title="{{ product.title | escape }}"
-  data-price="{{ product.selected_or_first_available_variant.price | money }}">
-  <div class="s-wave-sticky-cart-bar__content">
-    <div class="s-wave-sticky-cart-bar__info">
-      {% if block.settings.show_title %}
-        <span class="s-wave-sticky-cart-bar__title">{{ product.title }}</span>
-      {% endif %}
-      {% if block.settings.show_price %}
-        <span class="s-wave-sticky-cart-bar__price">{{ product.selected_or_first_available_variant.price | money }}</span>
-      {% endif %}
-    </div>
-    <div class="s-wave-sticky-cart-bar__actions">
-      {% if block.settings.show_quantity %}
-        <input
-          class="s-wave-sticky-cart-bar__quantity"
-          type="number"
-          min="1"
-          value="1"
-          aria-label="Quantity"
-        />
-      {% endif %}
-      <button class="s-wave-sticky-cart-bar__button" type="button">
-        {{ block.settings.button_label }}
-      </button>
+{% if product %}
+  <div id="s-wave-sticky-cart-bar"
+    style="--s-wave-sticky-bar-bg: {{ block.settings.background_color }}; --s-wave-sticky-bar-border: {{ block.settings.border_color }}; --s-wave-sticky-bar-text: {{ block.settings.text_color }}; --s-wave-sticky-bar-button-bg: {{ block.settings.button_color }}; --s-wave-sticky-bar-button-text: {{ block.settings.button_text_color }};"
+    data-product-id="{{ product.id }}"
+    data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+    data-product-title="{{ product.title | escape }}"
+    data-price="{{ product.selected_or_first_available_variant.price | money }}">
+    <div class="s-wave-sticky-cart-bar__content">
+      <div class="s-wave-sticky-cart-bar__info">
+        {% if block.settings.show_title %}
+          <span class="s-wave-sticky-cart-bar__title">{{ product.title }}</span>
+        {% endif %}
+        {% if block.settings.show_price %}
+          <span class="s-wave-sticky-cart-bar__price">{{ product.selected_or_first_available_variant.price | money }}</span>
+        {% endif %}
+      </div>
+      <div class="s-wave-sticky-cart-bar__actions">
+        {% if block.settings.show_quantity %}
+          <input
+            class="s-wave-sticky-cart-bar__quantity"
+            type="number"
+            min="1"
+            value="1"
+            aria-label="Quantity"
+          />
+        {% endif %}
+        <button class="s-wave-sticky-cart-bar__button" type="button">
+          {{ block.settings.button_label }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-{{ 'sticky-cart-bar.css' | asset_url | stylesheet_tag }}
-{{ 'sticky-cart-bar.js' | asset_url | script_tag }}
+  {{ 'sticky-cart-bar.css' | asset_url | stylesheet_tag }}
+  {{ 'sticky-cart-bar.js' | asset_url | script_tag }}
+{% endif %}
 
 {% schema %}
 {
