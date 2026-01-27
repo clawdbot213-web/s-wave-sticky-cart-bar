@@ -5,6 +5,20 @@
   const button = bar.querySelector('.s-wave-sticky-cart-bar__button');
   const quantityInput = bar.querySelector('.s-wave-sticky-cart-bar__quantity');
   const productForm = document.querySelector('form[action*="/cart/add"]');
+  const variantInput = productForm?.querySelector('input[name="id"]');
+
+  const syncVariantFromForm = () => {
+    if (!variantInput) return;
+    if (variantInput.value) {
+      bar.dataset.variantId = variantInput.value;
+    }
+  };
+
+  if (variantInput) {
+    syncVariantFromForm();
+    variantInput.addEventListener('change', syncVariantFromForm);
+    variantInput.addEventListener('input', syncVariantFromForm);
+  }
 
   const showBar = () => {
     bar.classList.add('is-visible');
