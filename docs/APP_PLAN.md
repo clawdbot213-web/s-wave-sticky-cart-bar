@@ -20,8 +20,12 @@ Create a sticky add‑to‑cart bar that appears when the main product form is s
 ## Current Blocker
 - `shopify app init` dependency install hangs in this environment. Using template clone instead.
 
+## Status
+- Theme app extension scaffolded with app block, JS, and CSS.
+- Sticky bar shows when product form scrolls out of view and posts to cart.
+
 ## Next Actions
-1. Create theme app extension folder (`extensions/sticky-cart-bar`)
-2. Add block schema + liquid + minimal JS to detect visibility
-3. Wire add-to-cart form submission via `fetch('/cart/add.js')`
-4. Add basic CSS and settings
+1. Run `shopify app dev` to register the app + extension in a dev store.
+2. QA in a Dawn product page (variant changes, sold-out state, mobile sizing).
+3. Decide if we need product/variant selection handling beyond the current form sync.
+4. Add lightweight admin page for help/docs if needed.
